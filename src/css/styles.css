@@ -49,11 +49,31 @@ input:focus {
   transition: transform background-color var(--animation-duration)
     var(--timing-function);
 }
+
+.load {
+  display: none;
+  margin: 20px auto;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.04em;
+  background-color: var(--prime-color);
+  color: #ffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border-color: var(--prime-color);
+  box-shadow: var(--prime-box-shadow);
+  transition: transform background-color var(--animation-duration)
+    var(--timing-function);
+}
+.load:hover,
 .search-btn:hover,
+.load:focus,
 .search-btn:focus {
   background-color: #6c8cff;
   transform: scale(1.03);
 }
+
 .gallery {
   display: flex;
   justify-content: center;

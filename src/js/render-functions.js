@@ -29,7 +29,7 @@ const render = (element, obj) => {
       </li>`
     )
     .join('');
-  element.innerHTML = markup;
+  element.insertAdjacentHTML('beforeend', markup);
 };
 const renderLoader = element => {
   const markup = `<span class="loader visible"></span>`;
@@ -50,4 +50,14 @@ const errorMessege = str =>
     theme: 'dark',
   });
 
-export { render, clearMarkup, renderLoader, errorMessege };
+const makeVisible = el => el.classList.add('visible');
+const makeUnvisible = el => el.classList.remove('visible');
+
+export {
+  render,
+  clearMarkup,
+  renderLoader,
+  errorMessege,
+  makeVisible,
+  makeUnvisible,
+};

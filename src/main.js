@@ -6,6 +6,7 @@ import {
   clearMarkup,
   renderLoader,
   errorMessege,
+  warningMessage,
   makeVisible,
   makeUnvisible,
 } from './js/render-functions';
@@ -23,22 +24,21 @@ const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
-const checkingGetApiResult = arr => {
-  if (arr.length > 0) {
-    render(refs.gallery, arr);
-    lightbox.refresh();
-  } else {
-    errorMessege(
-      'Sorry, there are no images matching your search query. Please try again!'
-    );
-  }
-};
 
 const onLoadBtnClick = e => {
   page += 1;
   makeVisible(loader);
   getPixabayApi(searchedEl, page)
-    .then(({ hits }) => checkingGetApiResult(hits))
+    .then(({ hits, totalHits }) => {
+      render(refs.gallery, hits);
+      lightbox.refresh();
+      if (refs.gallery.children.length === totalHits) {
+        makeUnvisible(refs.loadBtn);
+        warningMessage(
+          "We're sorry, but you've reached the end of search results."
+        );
+      }
+    })
     .catch(err =>
       errorMessege('Ooops... Something go wrong. Please, try again later')
     )
@@ -51,7 +51,6 @@ const onSearch = e => {
   makeUnvisible(refs.loadBtn);
   const targetForm = e.currentTarget;
   searchedEl = targetForm.input.value.trim();
-
   if (!searchedEl) {
     return errorMessege(
       `There's nothing to search. Please, type the query target first!`
@@ -61,7 +60,16 @@ const onSearch = e => {
   loader = document.querySelector('.loader');
   clearMarkup(refs.gallery);
   getPixabayApi(searchedEl)
-    .then(({ hits }) => checkingGetApiResult(hits))
+    .then(({ hits }) => {
+      if (hits.length > 0) {
+        render(refs.gallery, hits);
+        lightbox.refresh();
+      } else {
+        errorMessege(
+          'Sorry, there are no images matching your search query. Please try again!'
+        );
+      }
+    })
     .then(() => {
       makeVisible(refs.loadBtn);
       refs.loadBtn.addEventListener('click', onLoadBtnClick);

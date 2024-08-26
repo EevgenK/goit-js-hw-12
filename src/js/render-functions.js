@@ -37,7 +37,7 @@ const renderLoader = element => {
 };
 const clearMarkup = element => (element.innerHTML = '');
 const errorMessege = str =>
-  iziToast.warning({
+  iziToast.error({
     message: str,
     position: 'topRight',
     backgroundColor: '#EF4040',
@@ -49,7 +49,17 @@ const errorMessege = str =>
     maxWidth: '432px',
     theme: 'dark',
   });
-
+const warningMessage = str =>
+  iziToast.warning({
+    message: str,
+    backgroundColor: '#4e75ff',
+    messageColor: '#FAFAFB',
+    position: 'topRight',
+    messageSize: '16px',
+    messageLineHeight: '24px',
+    maxWidth: '432px',
+    theme: 'dark',
+  });
 const makeVisible = el => el.classList.add('visible');
 const makeUnvisible = el => el.classList.remove('visible');
 
@@ -58,6 +68,7 @@ export {
   clearMarkup,
   renderLoader,
   errorMessege,
+  warningMessage,
   makeVisible,
   makeUnvisible,
 };

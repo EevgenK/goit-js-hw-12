@@ -88,7 +88,7 @@ const onSearch = e => {
       errorMessege('Ooops... Something go wrong. Please, try again later')
     )
     .finally(() => {
-      loader.classList.remove('visible');
+      makeUnvisible(loader);
       targetForm.reset();
     });
 };

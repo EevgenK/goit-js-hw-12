@@ -19,11 +19,20 @@ const refs = {
 let page = 1;
 let searchedEl = '';
 let loader;
+
 const lightbox = new SimpleLightbox('.gallery a', {
   /* options */
   captionsData: 'alt',
   captionDelay: 250,
 });
+
+const smoothScroll = () => {
+  let cardHeight = refs.gallery.firstChild.getBoundingClientRect().height;
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+};
 
 const onLoadBtnClick = e => {
   page += 1;
@@ -32,6 +41,7 @@ const onLoadBtnClick = e => {
     .then(({ hits, totalHits }) => {
       render(refs.gallery, hits);
       lightbox.refresh();
+      smoothScroll();
       if (refs.gallery.children.length === totalHits) {
         makeUnvisible(refs.loadBtn);
         warningMessage(

@@ -21,7 +21,6 @@ let searchedEl = '';
 let loader;
 
 const lightbox = new SimpleLightbox('.gallery a', {
-  /* options */
   captionsData: 'alt',
   captionDelay: 250,
 });
@@ -33,34 +32,73 @@ const smoothScroll = () => {
     behavior: 'smooth',
   });
 };
+const makeFirtsRender = async () => {
+  try {
+    const { hits } = await getPixabayApi(searchedEl);
+    if (hits.length > 0) {
+      render(refs.gallery, hits);
+      lightbox.refresh();
+      makeVisible(refs.loadBtn);
+    } else {
+      errorMessege(
+        'Sorry, there are no images matching your search query. Please try again!'
+      );
+    }
+  } catch (error) {
+    errorMessege('Ooops... Something go wrong. Please, try again later');
+  }
+  makeUnvisible(loader);
+  refs.form.reset();
+};
+
+const makeloadMoreRender = async () => {
+  try {
+    const { hits, totalHits } = await getPixabayApi(searchedEl, page);
+    render(refs.gallery, hits);
+    lightbox.refresh();
+    smoothScroll();
+    if (refs.gallery.children.length === totalHits) {
+      makeUnvisible(refs.loadBtn);
+      warningMessage(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
+  } catch (error) {
+    errorMessege('Ooops... Something go wrong. Please, try again later');
+  }
+  makeUnvisible(loader);
+};
 
 const onLoadBtnClick = e => {
   page += 1;
   makeVisible(loader);
-  getPixabayApi(searchedEl, page)
-    .then(({ hits, totalHits }) => {
-      render(refs.gallery, hits);
-      lightbox.refresh();
-      smoothScroll();
-      if (refs.gallery.children.length === totalHits) {
-        makeUnvisible(refs.loadBtn);
-        warningMessage(
-          "We're sorry, but you've reached the end of search results."
-        );
-      }
-    })
-    .catch(err =>
-      errorMessege('Ooops... Something go wrong. Please, try again later')
-    )
-    .finally(() => {
-      makeUnvisible(loader);
-    });
+  makeloadMoreRender();
+  // ----------------------IF TO USE THEN-CATCH-FINALY METHOD--------------------------
+  // getPixabayApi(searchedEl, page)
+  //   .then(({ hits, totalHits }) => {
+  //     render(refs.gallery, hits);
+  //     lightbox.refresh();
+  //     smoothScroll();
+  //     if (refs.gallery.children.length === totalHits) {
+  //       makeUnvisible(refs.loadBtn);
+  //       warningMessage(
+  //         "We're sorry, but you've reached the end of search results."
+  //       );
+  //     }
+  //   })
+  //   .catch(err =>
+  //     errorMessege('Ooops... Something go wrong. Please, try again later')
+  //   )
+  //   .finally(() => {
+  //     makeUnvisible(loader);
+  //   });
+  // -------------------------------------------------------------------------------------
 };
+
 const onSearch = e => {
   e.preventDefault();
   makeUnvisible(refs.loadBtn);
-  const targetForm = e.currentTarget;
-  searchedEl = targetForm.input.value.trim();
+  searchedEl = e.currentTarget.input.value.trim();
   if (!searchedEl) {
     return errorMessege(
       `There's nothing to search. Please, type the query target first!`
@@ -69,28 +107,33 @@ const onSearch = e => {
   renderLoader(refs.loadBtn);
   loader = document.querySelector('.loader');
   clearMarkup(refs.gallery);
-  getPixabayApi(searchedEl)
-    .then(({ hits }) => {
-      if (hits.length > 0) {
-        render(refs.gallery, hits);
-        lightbox.refresh();
-      } else {
-        errorMessege(
-          'Sorry, there are no images matching your search query. Please try again!'
-        );
-      }
-    })
-    .then(() => {
-      makeVisible(refs.loadBtn);
-      refs.loadBtn.addEventListener('click', onLoadBtnClick);
-    })
-    .catch(err =>
-      errorMessege('Ooops... Something go wrong. Please, try again later')
-    )
-    .finally(() => {
-      makeUnvisible(loader);
-      targetForm.reset();
-    });
+  makeFirtsRender();
+  refs.loadBtn.addEventListener('click', onLoadBtnClick);
+
+  // ----------------------IF TO USE THEN-CATCH-FINALY METHOD--------------------------
+  // getPixabayApi(searchedEl)
+  //   .then(({ hits }) => {
+  //     if (hits.length > 0) {
+  //       render(refs.gallery, hits);
+  //       lightbox.refresh();
+  //     } else {
+  //       errorMessege(
+  //         'Sorry, there are no images matching your search query. Please try again!'
+  //       );
+  //     }
+  //   })
+  //   .then(() => {
+  //     makeVisible(refs.loadBtn);
+  //     refs.loadBtn.addEventListener('click', onLoadBtnClick);
+  //   })
+  //   .catch(err =>
+  //     errorMessege('Ooops... Something go wrong. Please, try again later')
+  //   )
+  //   .finally(() => {
+  //     makeUnvisible(loader);
+  //     targetForm.reset();
+  //   });
+  // -------------------------------------------------------------------------------------
 };
 
 refs.form.addEventListener('submit', onSearch);

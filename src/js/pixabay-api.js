@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
-const getPixabayApi = async (request,pageNumber=1) => {
+const getPixabayApi = async (request, pageNumber) => {
   try {
     const resp = await axios.get('', {
       params: {

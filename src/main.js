@@ -34,7 +34,7 @@ const smoothScroll = () => {
 };
 const makeFirtsRender = async () => {
   try {
-    const { hits } = await getPixabayApi(searchedEl);
+    const { hits } = await getPixabayApi(searchedEl, page);
     if (hits.length > 0) {
       render(refs.gallery, hits);
       lightbox.refresh();
@@ -67,10 +67,12 @@ const makeloadMoreRender = async () => {
     errorMessege('Ooops... Something go wrong. Please, try again later');
   }
   makeUnvisible(loader);
+  makeVisible(refs.loadBtn);
 };
 
 const onLoadBtnClick = e => {
   page += 1;
+  makeUnvisible(refs.loadBtn);
   makeVisible(loader);
   makeloadMoreRender();
   // ----------------------IF TO USE THEN-CATCH-FINALY METHOD--------------------------
@@ -97,6 +99,7 @@ const onLoadBtnClick = e => {
 
 const onSearch = e => {
   e.preventDefault();
+  page = 1;
   makeUnvisible(refs.loadBtn);
   searchedEl = e.currentTarget.input.value.trim();
   if (!searchedEl) {

@@ -109,7 +109,7 @@ input:focus {
 
 .loader {
   display: none;
-  margin: 0 auto;
+  margin: 10px auto;
   width: 100px;
   height: 100px;
   background: var(--prime-color);

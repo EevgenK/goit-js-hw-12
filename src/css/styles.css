@@ -28,6 +28,10 @@ input:focus {
   border: inherit;
   outline: 1px solid var(--prime-color);
 }
+.section {
+  width: 1200px;
+  margin: 0 auto;
+}
 .search-form {
   display: flex;
   justify-content: center;

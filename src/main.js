@@ -15,10 +15,10 @@ const refs = {
   form: document.querySelector('.search-form'),
   gallery: document.querySelector('.gallery'),
   loadBtn: document.querySelector('.load'),
+  loader: '',
 };
 let page = 1;
 let searchedEl = '';
-let loader;
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -47,33 +47,34 @@ const makeFirtsRender = async () => {
   } catch (error) {
     errorMessege('Ooops... Something go wrong. Please, try again later');
   }
-  makeUnvisible(loader);
+  makeUnvisible(refs.loader);
   refs.form.reset();
 };
 
 const makeloadMoreRender = async () => {
   try {
     const { hits, totalHits } = await getPixabayApi(searchedEl, page);
-    render(refs.gallery, hits);
-    lightbox.refresh();
-    smoothScroll();
     if (refs.gallery.children.length === totalHits) {
       makeUnvisible(refs.loadBtn);
       warningMessage(
         "We're sorry, but you've reached the end of search results."
       );
+    } else {
+      render(refs.gallery, hits);
+      lightbox.refresh();
+      smoothScroll();
+      makeVisible(refs.loadBtn);
     }
   } catch (error) {
     errorMessege('Ooops... Something go wrong. Please, try again later');
   }
-  makeUnvisible(loader);
-  makeVisible(refs.loadBtn);
+  makeUnvisible(refs.loader);
 };
 
 const onLoadBtnClick = e => {
   page += 1;
   makeUnvisible(refs.loadBtn);
-  makeVisible(loader);
+  makeVisible(refs.loader);
   makeloadMoreRender();
   // ----------------------IF TO USE THEN-CATCH-FINALY METHOD--------------------------
   // getPixabayApi(searchedEl, page)
@@ -92,7 +93,7 @@ const onLoadBtnClick = e => {
   //     errorMessege('Ooops... Something go wrong. Please, try again later')
   //   )
   //   .finally(() => {
-  //     makeUnvisible(loader);
+  //     makeUnvisible(refs.loader);
   //   });
   // -------------------------------------------------------------------------------------
 };
@@ -108,10 +109,9 @@ const onSearch = e => {
     );
   }
   renderLoader(refs.loadBtn);
-  loader = document.querySelector('.loader');
+  refs.loader = document.querySelector('.loader');
   clearMarkup(refs.gallery);
   makeFirtsRender();
-  refs.loadBtn.addEventListener('click', onLoadBtnClick);
 
   // ----------------------IF TO USE THEN-CATCH-FINALY METHOD--------------------------
   // getPixabayApi(searchedEl)
@@ -127,16 +127,16 @@ const onSearch = e => {
   //   })
   //   .then(() => {
   //     makeVisible(refs.loadBtn);
-  //     refs.loadBtn.addEventListener('click', onLoadBtnClick);
+
   //   })
   //   .catch(err =>
   //     errorMessege('Ooops... Something go wrong. Please, try again later')
   //   )
   //   .finally(() => {
-  //     makeUnvisible(loader);
+  //     makeUnvisible(refs.loader);
   //     targetForm.reset();
   //   });
   // -------------------------------------------------------------------------------------
 };
-
+refs.loadBtn.addEventListener('click', onLoadBtnClick);
 refs.form.addEventListener('submit', onSearch);

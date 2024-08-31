@@ -50,6 +50,7 @@ const makeFirtsRender = async () => {
   } catch (error) {
     errorMessege('Ooops... Something go wrong. Please, try again later');
   }
+  makeUnvisible(refs.loader);
 };
 
 const makeloadMoreRender = async () => {

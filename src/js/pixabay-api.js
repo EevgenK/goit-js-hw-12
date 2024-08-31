@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
-const getPixabayApi = async (request, pageNumber) => {
+const getPixabayApi = async (request, pageNumber, renderdElems = 15) => {
   try {
     const resp = await axios.get('', {
       params: {
@@ -11,7 +11,7 @@ const getPixabayApi = async (request, pageNumber) => {
         image_type: 'photo',
         orientation: 'horizontal',
         safesearch: 'true',
-        per_page: '15',
+        per_page: renderdElems,
         page: pageNumber,
       },
     });

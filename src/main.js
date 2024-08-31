@@ -17,6 +17,7 @@ const refs = {
   loadBtn: document.querySelector('.load'),
   loader: '',
 };
+const renderdElems = 15;
 let page = 1;
 let searchedEl = '';
 
@@ -32,39 +33,39 @@ const smoothScroll = () => {
     behavior: 'smooth',
   });
 };
+const calculatedPages = (totalHits, page) => totalHits / renderdElems / page;
 const makeFirtsRender = async () => {
   try {
-    const { hits } = await getPixabayApi(searchedEl, page);
-    if (hits.length > 0) {
-      render(refs.gallery, hits);
-      lightbox.refresh();
-      makeVisible(refs.loadBtn);
-    } else {
-      errorMessege(
+    const { hits, totalHits } = await getPixabayApi(searchedEl, page);
+    makeUnvisible(refs.loader);
+    if (hits.length <= 0) {
+      return errorMessege(
         'Sorry, there are no images matching your search query. Please try again!'
       );
     }
+    calculatedPages(totalHits, page) > 1 && makeVisible(refs.loadBtn);
+    render(refs.gallery, hits);
+    lightbox.refresh();
+    refs.form.reset();
   } catch (error) {
     errorMessege('Ooops... Something go wrong. Please, try again later');
   }
-  makeUnvisible(refs.loader);
-  refs.form.reset();
 };
 
 const makeloadMoreRender = async () => {
   try {
     const { hits, totalHits } = await getPixabayApi(searchedEl, page);
-    if (refs.gallery.children.length === totalHits) {
+    if (calculatedPages(totalHits, page) <= 1) {
       makeUnvisible(refs.loadBtn);
       warningMessage(
         "We're sorry, but you've reached the end of search results."
       );
     } else {
-      render(refs.gallery, hits);
-      lightbox.refresh();
-      smoothScroll();
       makeVisible(refs.loadBtn);
     }
+    render(refs.gallery, hits);
+    lightbox.refresh();
+    smoothScroll();
   } catch (error) {
     errorMessege('Ooops... Something go wrong. Please, try again later');
   }
@@ -138,5 +139,6 @@ const onSearch = e => {
   //   });
   // -------------------------------------------------------------------------------------
 };
+
 refs.loadBtn.addEventListener('click', onLoadBtnClick);
 refs.form.addEventListener('submit', onSearch);
